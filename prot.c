@@ -822,7 +822,7 @@ static void
 enqueue_incoming_job(Conn *c)
 {
     int r;
-    job j = c->in_job;
+    job j = c->in_job, j2=NULL;
 
     c->in_job = NULL; /* the connection no longer owns this job */
     c->in_job_read = 0;
@@ -841,6 +841,13 @@ enqueue_incoming_job(Conn *c)
         job_free(j);
         return reply_serr(c, MSG_DRAINING);
     }
+
+    /////
+    if ((j2=job_find_by_body(j)) != NULL ) {
+        job_free(j);
+        return reply_line(c, STATE_SENDWORD, MSG_INSERTED_FMT, j2->r.id);
+    }
+    ///
 
     if (j->walresv) return reply_serr(c, MSG_INTERNAL_ERROR);
     j->walresv = walresvput(&c->srv->wal, j);

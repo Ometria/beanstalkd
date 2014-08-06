@@ -203,11 +203,13 @@ void job_free(job j);
 
 /* Lookup a job by job ID */
 job job_find(uint64 job_id);
+job job_find_by_body(job j);
 
 /* the void* parameters are really job pointers */
 void job_setheappos(void*, int);
 int job_pri_less(void*, void*);
 int job_delay_less(void*, void*);
+int job_body_cmp(job a, job b);
 
 job job_copy(job j);
 

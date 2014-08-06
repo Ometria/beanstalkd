@@ -84,6 +84,38 @@ job_find(uint64 job_id)
 }
 
 job
+job_find_by_body(job j)
+{
+    job jh = NULL;
+    int index;
+
+    for (index = 0, jh = all_jobs[index];
+        index < all_jobs_cap-1;
+        index++, jh = all_jobs[index]) {
+       do {
+           if( jh &&
+                    (jh->r.state != Invalid) &&
+                    (job_body_cmp(j,jh) == 0) ) {
+           return jh;
+                        }
+                } while( jh && ((jh=jh->ht_next) != NULL) );
+    }
+
+    return jh;
+}
+
+int
+job_body_cmp(job a, job b)
+{
+    int bsize = min(a->r.body_size, b->r.body_size);
+
+    if (a->r.body_size > b->r.body_size) return 1;
+    if (a->r.body_size < b->r.body_size) return -1;
+    if (a->tube != b->tube) return -1;
+    return memcmp(a->body, b->body, bsize);
+}
+
+job
 allocate_job(int body_size)
 {
     job j;
