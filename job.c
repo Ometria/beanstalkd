@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "dat.h"
+#include <stdio.h>
 
 static uint64 next_id = 1;
 
@@ -89,6 +90,35 @@ job_find_by_body(job j)
     job jh = NULL;
     int index;
 
+    Heap h = j->tube->ready;
+    if (h.len>0){
+        for (index = h.len-1; index >= 0; index--) {
+            jh = h.data[index];
+            if ((jh->r.state != Invalid) && (job_body_cmp(j,jh)==0)) {
+                return jh;
+            }
+        }
+        //fprintf(stderr, "scanned %i\n", index);
+    }
+
+    h = j->tube->delay;
+    if (h.len>0){
+        for (index = h.len-1; index >= 0; index--) {
+            jh = h.data[index];
+            if ((jh->r.state != Invalid) && (job_body_cmp(j,jh)==0)) {
+                return jh;
+            }
+        }
+        //fprintf(stderr, "scanned %i\n", index);
+    }
+
+    return NULL;
+}
+/*job_find_by_body(job j)
+{
+    job jh = NULL;
+    int index;
+
     for (index = 0, jh = all_jobs[index];
         index < all_jobs_cap-1;
         index++, jh = all_jobs[index]) {
@@ -102,16 +132,15 @@ job_find_by_body(job j)
     }
 
     return jh;
-}
+}*/
 
 int
 job_body_cmp(job a, job b)
 {
-    int bsize = min(a->r.body_size, b->r.body_size);
-
     if (a->r.body_size > b->r.body_size) return 1;
     if (a->r.body_size < b->r.body_size) return -1;
-    if (a->tube != b->tube) return -1;
+    //if (a->tube != b->tube) return -1;
+    int bsize = min(a->r.body_size, b->r.body_size);
     return memcmp(a->body, b->body, bsize);
 }
 
