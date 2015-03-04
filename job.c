@@ -92,13 +92,13 @@ job_find_by_body(job j)
     for (index = 0, jh = all_jobs[index];
         index < all_jobs_cap-1;
         index++, jh = all_jobs[index]) {
-       do {
-           if( jh &&
-                    (jh->r.state != Invalid) &&
-                    (job_body_cmp(j,jh) == 0) ) {
-           return jh;
-                        }
-                } while( jh && ((jh=jh->ht_next) != NULL) );
+        do {
+            if( jh &&
+                (jh->r.state != Invalid) &&
+                (job_body_cmp(j,jh) == 0) ) {
+                return jh;
+            }
+        } while( jh && ((jh=jh->ht_next) != NULL) );
     }
 
     return NULL;
