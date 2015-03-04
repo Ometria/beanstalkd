@@ -101,7 +101,7 @@ job_find_by_body(job j)
                 } while( jh && ((jh=jh->ht_next) != NULL) );
     }
 
-    return jh;
+    return NULL;
 }
 
 int
